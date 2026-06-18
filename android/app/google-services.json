@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "25568501552",
+    "project_id": "restau-loyalty",
+    "storage_bucket": "restau-loyalty.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:25568501552:android:1247b106fcb0f40e05b2f5",
+        "android_client_info": {
+          "package_name": "com.example.restaurant_loyalty_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBQpz1i_pg3mf8K4SEi-rqF9HgJqGgb0Tk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
