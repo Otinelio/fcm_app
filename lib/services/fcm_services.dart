@@ -1,5 +1,7 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter/material.dart';
+import '../main.dart';
 
 class FcmService {
   final FirebaseMessaging _messaging = FirebaseMessaging.instance;
@@ -43,6 +45,23 @@ class FcmService {
             ),
           ),
         );
+      } else if (message.data.isNotEmpty && message.data['type'] == 'online_only') {
+        final context = navigatorKey.currentContext;
+        if (context != null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(message.data['message'] ?? 'Vous avez reçu un message privé !'),
+              backgroundColor: Colors.blueAccent,
+              behavior: SnackBarBehavior.floating,
+              duration: const Duration(seconds: 5),
+              action: SnackBarAction(
+                label: 'Fermer',
+                textColor: Colors.white,
+                onPressed: () {},
+              ),
+            ),
+          );
+        }
       }
     });
   }
@@ -70,7 +89,8 @@ class FcmService {
     // Inscription au topic pour les tests (Module 12)
     try {
       await FirebaseMessaging.instance.subscribeToTopic('vip_customers');
-      print('✅ Inscription au topic vip_customers réussie');
+      await FirebaseMessaging.instance.subscribeToTopic('all_users');
+      print('✅ Inscription au topic vip_customers et all_users réussie');
     } catch (e) {
       print('❌ Erreur inscription topic: $e');
     }

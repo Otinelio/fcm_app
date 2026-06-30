@@ -6,7 +6,8 @@ import 'home_screen.dart';
 import 'notifications_screen.dart';
 
 class MainLayout extends StatefulWidget {
-  const MainLayout({super.key});
+  final bool isNewlyLoggedIn;
+  const MainLayout({super.key, this.isNewlyLoggedIn = false});
 
   @override
   State<MainLayout> createState() => _MainLayoutState();
@@ -33,6 +34,10 @@ class _MainLayoutState extends State<MainLayout> {
         // Envoi au backend Laravel via ApiService
         final platform = Platform.isAndroid ? 'android' : 'ios';
         await ApiService.registerDeviceToken(token, platform);
+        
+        if (widget.isNewlyLoggedIn) {
+          await ApiService.simulateEvent('login_confirmation');
+        }
       },
     );
   }

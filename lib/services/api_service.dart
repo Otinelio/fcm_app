@@ -120,4 +120,80 @@ class ApiService {
       return false;
     }
   }
+
+  /// Récupère le profil utilisateur connecté (nom + loyalty_points)
+  static Future<Map<String, dynamic>?> fetchProfile() async {
+    try {
+      final token = await getToken();
+      if (token == null) return null;
+
+      final response = await http.get(
+        Uri.parse('$baseUrl/profile'),
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body) as Map<String, dynamic>;
+      }
+      return null;
+    } catch (e) {
+      print('Erreur fetchProfile: $e');
+      return null;
+    }
+  }
+
+  static Future<Map<String, dynamic>> getStatus() async {
+    final response = await http.get(Uri.parse('$baseUrl/ping'));
+    return jsonDecode(response.body) as Map<String, dynamic>;
+  }
+
+  static Future<int> getLoyaltyPoints(int customerId) async {
+    final token = await getToken();
+    final response = await http.get(
+      Uri.parse('$baseUrl/customers/$customerId'),
+      headers: {
+        'Accept': 'application/json',
+        if (token != null) 'Authorization': 'Bearer $token',
+      },
+    );
+    final data = jsonDecode(response.body) as Map<String, dynamic>;
+    return data['loyalty_points'] as int;
+  }
+
+  /// Demande à Laravel l'autorisation d'écouter un channel privé.
+  static Future<Map<String, dynamic>> authorizeChannel(String socketId, String channelName) async {
+    final token = await getToken();
+    final response = await http.post(
+      Uri.parse('$baseUrl/broadcasting/auth'),
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        if (token != null) 'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({'socket_id': socketId, 'channel_name': channelName}),
+    );
+    if (response.statusCode != 200) {
+      throw Exception('Erreur d\'autorisation (code ${response.statusCode})');
+    }
+    return jsonDecode(response.body) as Map<String, dynamic>;
+  }
+
+  /// Confirme au serveur que la notification de récompense a été reçue
+  static Future<void> ackReward(int rewardId) async {
+    try {
+      final token = await getToken();
+      await http.post(
+        Uri.parse('$baseUrl/rewards/$rewardId/ack'),
+        headers: {
+          'Accept': 'application/json',
+          if (token != null) 'Authorization': 'Bearer $token',
+        },
+      );
+    } catch (e) {
+      print('Échec ack reward $rewardId: $e');
+    }
+  }
 }

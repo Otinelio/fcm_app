@@ -29,7 +29,7 @@ class _LoginScreenState extends State<LoginScreen> {
     if (success) {
       if (mounted) {
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const MainLayout()),
+          MaterialPageRoute(builder: (_) => const MainLayout(isNewlyLoggedIn: true)),
         );
       }
     } else {

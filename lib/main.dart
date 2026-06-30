@@ -11,6 +11,7 @@ import 'screens/promo_screen.dart';
 import 'services/api_service.dart';
 import 'services/fcm_services.dart';
 import 'services/notification_router.dart';
+import 'services/reverb_service.dart';
 
 // Fonction top-level obligatoire (pas dans une classe !)
 @pragma('vm:entry-point')
@@ -49,9 +50,28 @@ void main() async {
   runApp(RestaurantLoyaltyApp(isLoggedIn: token != null));
 }
 
-class RestaurantLoyaltyApp extends StatelessWidget {
+class RestaurantLoyaltyApp extends StatefulWidget {
   final bool isLoggedIn;
   const RestaurantLoyaltyApp({super.key, required this.isLoggedIn});
+
+  @override
+  State<RestaurantLoyaltyApp> createState() => _RestaurantLoyaltyAppState();
+}
+
+class _RestaurantLoyaltyAppState extends State<RestaurantLoyaltyApp> {
+  final reverbService = ReverbService();
+
+  @override
+  void initState() {
+    super.initState();
+    reverbService.connect();
+  }
+
+  @override
+  void dispose() {
+    reverbService.disconnect();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +79,7 @@ class RestaurantLoyaltyApp extends StatelessWidget {
       title: 'Restaurant Loyalty App',
       theme: AppTheme.lightTheme,
       navigatorKey: navigatorKey,
-      home: isLoggedIn ? const MainLayout() : const LoginScreen(),
+      home: widget.isLoggedIn ? const MainLayout() : const LoginScreen(),
       debugShowCheckedModeBanner: false,
       routes: {
         '/notifications': (context) => const NotificationsScreen(),
